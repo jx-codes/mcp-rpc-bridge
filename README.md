@@ -21,7 +21,7 @@ Claude ◄──── MCP Protocol ────► MCP Bridge ◄──── W
 ### Method 1: One-Line Install (Recommended)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/mcp-rpc-bridge/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/jx-codes/mcp-rpc-bridge/main/install.sh | bash
 ```
 
 This will:
@@ -36,7 +36,7 @@ This will:
 
 ```bash
 # Clone and install globally
-git clone https://github.com/YOUR_USERNAME/mcp-rpc-bridge.git
+git clone https://github.com/jx-codes/mcp-rpc-bridge.git
 cd mcp-rpc-bridge
 bun install
 bun run install-global
@@ -55,7 +55,7 @@ bun run uninstall-global
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/mcp-rpc-bridge.git
+git clone https://github.com/jx-codes/mcp-rpc-bridge.git
 cd mcp-rpc-bridge
 
 # Install dependencies and build
@@ -70,7 +70,7 @@ bun run start
 
 ```bash
 # Clone for development
-git clone https://github.com/YOUR_USERNAME/mcp-rpc-bridge.git
+git clone https://github.com/jx-codes/mcp-rpc-bridge.git
 cd mcp-rpc-bridge
 bun install
 
