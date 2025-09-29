@@ -1,0 +1,55 @@
+{
+  "name": "mcp-rpc-bridge",
+  "version": "1.0.0",
+  "description": "MCP Server bridge for WebSocket RPC system - enables Claude to execute TypeScript code via RPC",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mcp-rpc-bridge": "./dist/index.js"
+  },
+  "files": [
+    "dist/",
+    "README.md",
+    "package.json",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "bun run tsc",
+    "dev": "bun run --watch src/index.ts",
+    "start": "bun run dist/index.js",
+    "install-global": "bun run build && bun link",
+    "uninstall-global": "bun unlink"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jx-codes/mcp-rpc-bridge.git"
+  },
+  "homepage": "https://github.com/jx-codes/mcp-rpc-bridge#readme",
+  "bugs": {
+    "url": "https://github.com/jx-codes/mcp-rpc-bridge/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "rpc",
+    "bridge",
+    "claude",
+    "typescript",
+    "websocket"
+  ],
+  "author": "Jesus Moreno",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.5.0",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "bun": ">=1.0.0",
+    "node": ">=18.0.0"
+  }
+}
