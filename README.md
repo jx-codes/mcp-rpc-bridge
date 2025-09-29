@@ -28,8 +28,9 @@ This will:
 
 - Clone the repository
 - Install dependencies
-- Build the project
-- Install globally as `mcp-rpc-bridge` command
+- Compile to standalone binary with `bun build --compile`
+- Install to `~/.bun/bin/mcp-rpc-bridge`
+- Add `~/.bun/bin` to PATH if needed
 - Clean up temporary files
 
 ### Method 2: Manual Global Install
@@ -109,8 +110,8 @@ bun run dev
 **WebSocket Connection** (`src/websocket-manager.ts:12-26`)
 
 - Maintains persistent connection to RPC runtime at `ws://localhost:8080/ws`
-- Auto-reconnects on connection loss with exponential backoff
-- Connection pooling to handle multiple concurrent requests
+- Auto-reconnects on connection loss with 1-second delay
+- Single connection with message correlation for concurrent requests
 
 **Message Correlation** (`src/message-correlator.ts:33-64`)
 
