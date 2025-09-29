@@ -1,68 +1,65 @@
 #!/usr/bin/env node
 
-import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
+import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
-} from '@modelcontextprotocol/sdk/types.js';
+} from "@modelcontextprotocol/sdk/types.js";
 
-import { RpcMcpServer } from './rpc-mcp-server.js';
-import { McpConfig } from './config.js';
+import { McpConfig } from "./config.js";
+import { RpcMcpServer } from "./rpc-mcp-server.js";
 
 // Configuration - can be overridden by environment variables
 const config: McpConfig = {
   rpcServer: {
-    wsUrl: process.env.RPC_WS_URL || 'ws://localhost:8080/ws',
-    httpUrl: process.env.RPC_HTTP_URL || 'http://localhost:8080',
+    wsUrl: process.env.RPC_WS_URL || "ws://localhost:8080/ws",
+    httpUrl: process.env.RPC_HTTP_URL || "http://localhost:8080",
   },
-  defaultTimeout: parseInt(process.env.RPC_TIMEOUT || '30000'),
+  defaultTimeout: parseInt(process.env.RPC_TIMEOUT || "30000"),
 };
 
 // Tool definitions
 const tools: Tool[] = [
   {
-    name: 'run_script',
-    description: 'Execute TypeScript code on the RPC server with injected rpc client',
+    name: "execute_typescript",
+    description:
+      "Execute TypeScript code on the RPC server with injected rpc client",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {
         code: {
-          type: 'string',
-          description: 'TypeScript code to execute',
-        },
-        timeout: {
-          type: 'number',
-          description: 'Timeout in milliseconds (default: 30000)',
-          minimum: 1000,
-          maximum: 300000,
+          type: "string",
+          description: "TypeScript code to execute on Deno",
         },
       },
-      required: ['code'],
+      required: ["code"],
     },
   },
   {
-    name: 'get_available_rpc_tools',
-    description: 'Get the complete TypeScript client definitions for all available RPC functions',
+    name: "get_rpc_client_code",
+    description:
+      "Get the complete TypeScript client definitions for all available RPC functions",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {},
     },
   },
   {
-    name: 'help',
-    description: 'Get help about the RPC system and available functions',
+    name: "get_rpc_info",
+    description: "Get help about the RPC system and available functions",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {},
     },
   },
   {
-    name: 'status',
-    description: 'Check the status of RPC server connections (WebSocket and HTTP)',
+    name: "check_connection",
+    description:
+      "Check the status of RPC server connections (WebSocket and HTTP)",
     inputSchema: {
-      type: 'object',
+      type: "object",
       properties: {},
     },
   },
@@ -75,8 +72,8 @@ class McpRpcBridge {
   constructor() {
     this.server = new Server(
       {
-        name: 'rpc-mcp-server',
-        version: '1.0.0',
+        name: "rpc-mcp-server",
+        version: "1.0.0",
       },
       {
         capabilities: {
@@ -101,48 +98,50 @@ class McpRpcBridge {
 
       try {
         switch (name) {
-          case 'run_script': {
-            const result = await this.rpcServer.handleRunScript(args as { code: string; timeout?: number });
+          case "execute_typescript": {
+            const result = await this.rpcServer.handleRunScript(
+              args as { code: string; timeout?: number }
+            );
             return {
               content: [
                 {
-                  type: 'text',
+                  type: "text",
                   text: result,
                 },
               ],
             };
           }
 
-          case 'get_available_rpc_tools': {
+          case "get_rpc_client_code": {
             const result = await this.rpcServer.handleGetTools();
             return {
               content: [
                 {
-                  type: 'text',
+                  type: "text",
                   text: result,
                 },
               ],
             };
           }
 
-          case 'help': {
+          case "get_rpc_info": {
             const result = await this.rpcServer.handleHelp();
             return {
               content: [
                 {
-                  type: 'text',
+                  type: "text",
                   text: result,
                 },
               ],
             };
           }
 
-          case 'status': {
+          case "check_connection": {
             const result = await this.rpcServer.handleStatus();
             return {
               content: [
                 {
-                  type: 'text',
+                  type: "text",
                   text: result,
                 },
               ],
@@ -157,7 +156,7 @@ class McpRpcBridge {
         return {
           content: [
             {
-              type: 'text',
+              type: "text",
               text: `Error: ${message}`,
             },
           ],
@@ -175,7 +174,7 @@ class McpRpcBridge {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
 
-    console.error('RPC MCP Server started successfully');
+    console.error("RPC MCP Server started successfully");
     console.error(`WebSocket: ${config.rpcServer.wsUrl}`);
     console.error(`HTTP: ${config.rpcServer.httpUrl}`);
   }
@@ -186,19 +185,19 @@ class McpRpcBridge {
 }
 
 // Handle graceful shutdown
-process.on('SIGINT', async () => {
-  console.error('Shutting down MCP server...');
+process.on("SIGINT", async () => {
+  console.error("Shutting down MCP server...");
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
-  console.error('Shutting down MCP server...');
+process.on("SIGTERM", async () => {
+  console.error("Shutting down MCP server...");
   process.exit(0);
 });
 
 // Start the server
 const bridge = new McpRpcBridge();
 bridge.start().catch((error) => {
-  console.error('Failed to start MCP server:', error);
+  console.error("Failed to start MCP server:", error);
   process.exit(1);
 });
