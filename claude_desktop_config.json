@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mcp-rpc-bridge": {
+      "command": "mcp-rpc-bridge",
+      "args": []
+    }
+  }
+}

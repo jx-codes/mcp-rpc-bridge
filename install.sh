@@ -35,13 +35,31 @@ cd "$TEMP_DIR"
 echo "📦 Installing dependencies..."
 bun install
 
-# Build the project
-echo "🏗️  Building project..."
-bun run build
+# Compile the project
+echo "🏗️  Compiling project..."
+bun build --compile --outfile=mcp-rpc-bridge src/index.ts
 
-# Install globally
+# Install globally to ~/.bun/bin (no sudo needed)
 echo "🌍 Installing globally..."
-bun link
+mkdir -p "$HOME/.bun/bin"
+if [ -f "mcp-rpc-bridge" ]; then
+    echo "📋 Removing any existing binary..."
+    rm -f "$HOME/.bun/bin/mcp-rpc-bridge"
+    echo "📋 Copying new binary..."
+    cp mcp-rpc-bridge "$HOME/.bun/bin/mcp-rpc-bridge"
+    chmod +x "$HOME/.bun/bin/mcp-rpc-bridge"
+    echo "✅ Binary installed successfully"
+else
+    echo "❌ Compiled binary not found!"
+    exit 1
+fi
+
+# Add to PATH if needed
+if [[ ":$PATH:" != *":$HOME/.bun/bin:"* ]]; then
+    echo "📋 Adding ~/.bun/bin to PATH..."
+    echo 'export PATH="$HOME/.bun/bin:$PATH"' >> "$HOME/.bashrc"
+    echo 'export PATH="$HOME/.bun/bin:$PATH"' >> "$HOME/.zshrc" 2>/dev/null || true
+fi
 
 # Cleanup
 echo "🧹 Cleaning up..."
@@ -49,6 +67,9 @@ rm -rf "$TEMP_DIR"
 
 echo "✅ MCP RPC Bridge installed successfully!"
 echo "🚀 You can now use 'mcp-rpc-bridge' command anywhere."
+echo ""
+echo "📍 Installed to: \$HOME/.bun/bin/mcp-rpc-bridge"
+echo "   (This should be in your PATH automatically)"
 echo ""
 echo "Next steps:"
 echo "1. Start your RPC runtime server"
