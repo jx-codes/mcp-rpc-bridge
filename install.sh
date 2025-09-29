@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # MCP RPC Bridge - Easy Installation Script
-# Usage: curl -fsSL https://raw.githubusercontent.com/YOUR_USERNAME/mcp-rpc-bridge/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/jx-codes/mcp-rpc-bridge/main/install.sh | bash
 
 set -e
 
@@ -26,7 +26,7 @@ echo "📂 Using temp directory: $TEMP_DIR"
 
 # Clone repository
 echo "📥 Cloning repository..."
-git clone https://github.com/YOUR_USERNAME/mcp-rpc-bridge.git "$TEMP_DIR"
+git clone https://github.com/jx-codes/mcp-rpc-bridge.git "$TEMP_DIR"
 
 # Navigate to project directory
 cd "$TEMP_DIR"
@@ -55,4 +55,4 @@ echo "1. Start your RPC runtime server"
 echo "2. Configure Claude Desktop with this MCP server"
 echo "3. Run: mcp-rpc-bridge"
 echo ""
-echo "For configuration help, see: https://github.com/YOUR_USERNAME/mcp-rpc-bridge#readme"
+echo "For configuration help, see: https://github.com/jx-codes/mcp-rpc-bridge#readme"
