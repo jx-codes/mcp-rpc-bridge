@@ -8,17 +8,11 @@ import {
   Tool,
 } from "@modelcontextprotocol/sdk/types.js";
 
-import { McpConfig } from "./config.js";
+import { get_config } from "./config.js";
 import { RpcMcpServer } from "./rpc-mcp-server.js";
 
-// Configuration - can be overridden by environment variables
-const config: McpConfig = {
-  rpcServer: {
-    wsUrl: process.env.RPC_WS_URL || "ws://localhost:8080/ws",
-    httpUrl: process.env.RPC_HTTP_URL || "http://localhost:8080",
-  },
-  defaultTimeout: parseInt(process.env.RPC_TIMEOUT || "30000"),
-};
+// Configuration from command-line arguments
+const config = get_config();
 
 // Tool definitions
 const tools: Tool[] = [

@@ -90,10 +90,10 @@ bun run dev
   "mcpServers": {
     "codemode": {
       "command": "mcp-rpc-bridge",
-      "env": {
-        "RPC_WS_URL": "ws://localhost:8080/ws",
-        "RPC_HTTP_URL": "http://localhost:8080"
-      }
+      "args": [
+        "--ws-url", "ws://localhost:8080/ws",
+        "--http-url", "http://localhost:8080"
+      ]
     }
   }
 }
@@ -180,23 +180,43 @@ Health checks both communication channels:
 
 ## Configuration
 
-**Environment Variables:**
+**Command-Line Arguments:**
 
 ```bash
-RPC_WS_URL=ws://localhost:8080/ws     # WebSocket endpoint
-RPC_HTTP_URL=http://localhost:8080    # HTTP endpoint
-RPC_TIMEOUT=30000                     # Request timeout (ms)
+--ws-url, -w     # WebSocket endpoint (default: ws://localhost:8080/ws)
+--http-url, -h   # HTTP endpoint (default: http://localhost:8080)
+--timeout, -t    # Request timeout in ms (default: 30000)
 ```
 
-**Default Configuration** (`src/index.ts:15-21`):
+**Example Usage:**
+
+```bash
+mcp-rpc-bridge --ws-url ws://localhost:8080/ws --http-url http://localhost:8080 --timeout 30000
+# Or with short flags:
+mcp-rpc-bridge -w ws://localhost:8080/ws -h http://localhost:8080 -t 30000
+# Or use defaults (no arguments needed):
+mcp-rpc-bridge
+```
+
+**Configuration Function** (`src/config.ts:11-49`):
 
 ```typescript
-const config: McpConfig = {
-  rpcServer: {
-    wsUrl: process.env.RPC_WS_URL || "ws://localhost:8080/ws",
-    httpUrl: process.env.RPC_HTTP_URL || "http://localhost:8080",
-  },
-  defaultTimeout: parseInt(process.env.RPC_TIMEOUT || "30000"),
+export const get_config = (): McpConfig => {
+  const args = parseArgs({
+    args: process.argv.slice(2),
+    options: {
+      "ws-url": { type: "string", short: "w" },
+      "http-url": { type: "string", short: "h" },
+      "timeout": { type: "string", short: "t" },
+    },
+    strict: false,
+  });
+
+  const wsUrl = args.values["ws-url"] || "ws://localhost:8080/ws";
+  const httpUrl = args.values["http-url"] || "http://localhost:8080";
+  const timeout = parseInt(args.values["timeout"] || "30000", 10);
+
+  return { rpcServer: { wsUrl, httpUrl }, defaultTimeout: timeout };
 };
 ```
 
@@ -208,11 +228,24 @@ const config: McpConfig = {
 {
   "mcpServers": {
     "rpc-bridge": {
-      "command": "bun",
-      "args": ["run", "/path/to/mcp-rpc-bridge/dist/index.js"],
-      "env": {
-        "RPC_WS_URL": "ws://localhost:8080/ws"
-      }
+      "command": "mcp-rpc-bridge",
+      "args": [
+        "--ws-url", "ws://localhost:8080/ws",
+        "--http-url", "http://localhost:8080",
+        "--timeout", "30000"
+      ]
+    }
+  }
+}
+```
+
+**Or use defaults (all arguments are optional):**
+
+```json
+{
+  "mcpServers": {
+    "rpc-bridge": {
+      "command": "mcp-rpc-bridge"
     }
   }
 }
