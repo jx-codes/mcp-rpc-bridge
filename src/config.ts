@@ -12,11 +12,11 @@ export const get_config = (): McpConfig => {
   const args = parseArgs({
     args: process.argv.slice(2),
     options: {
-      "ws-url": {
+      "rpc-port": {
         type: "string",
-        short: "w",
+        short: "p",
       },
-      "http-url": {
+      "hostname": {
         type: "string",
         short: "h",
       },
@@ -29,15 +29,25 @@ export const get_config = (): McpConfig => {
   });
 
   // Use provided values or defaults
-  const wsUrl = args.values["ws-url"] as string | undefined || "ws://localhost:8080/ws";
-  const httpUrl = args.values["http-url"] as string | undefined || "http://localhost:8080";
+  const hostname = args.values["hostname"] as string | undefined || "localhost";
+  const portStr = args.values["rpc-port"] as string | undefined || "8080";
   const timeoutStr = args.values["timeout"] as string | undefined || "30000";
+
+  const port = parseInt(portStr, 10);
+  if (isNaN(port)) {
+    console.error("Error: --rpc-port must be a valid number");
+    process.exit(1);
+  }
 
   const timeout = parseInt(timeoutStr, 10);
   if (isNaN(timeout)) {
     console.error("Error: --timeout must be a valid number");
     process.exit(1);
   }
+
+  // Construct URLs from hostname and port
+  const wsUrl = `ws://${hostname}:${port}/ws`;
+  const httpUrl = `http://${hostname}:${port}`;
 
   return {
     rpcServer: {

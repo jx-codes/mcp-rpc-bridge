@@ -89,11 +89,20 @@ bun run dev
 {
   "mcpServers": {
     "codemode": {
+      "command": "mcp-rpc-bridge"
+    }
+  }
+}
+```
+
+Or with custom port/hostname:
+
+```json
+{
+  "mcpServers": {
+    "codemode": {
       "command": "mcp-rpc-bridge",
-      "args": [
-        "--ws-url", "ws://localhost:8080/ws",
-        "--http-url", "http://localhost:8080"
-      ]
+      "args": ["--rpc-port", "8080", "--hostname", "localhost"]
     }
   }
 }
@@ -183,38 +192,48 @@ Health checks both communication channels:
 **Command-Line Arguments:**
 
 ```bash
---ws-url, -w     # WebSocket endpoint (default: ws://localhost:8080/ws)
---http-url, -h   # HTTP endpoint (default: http://localhost:8080)
+--rpc-port, -p   # RPC server port (default: 8080)
+--hostname, -h   # Server hostname (default: localhost)
 --timeout, -t    # Request timeout in ms (default: 30000)
 ```
 
 **Example Usage:**
 
 ```bash
-mcp-rpc-bridge --ws-url ws://localhost:8080/ws --http-url http://localhost:8080 --timeout 30000
-# Or with short flags:
-mcp-rpc-bridge -w ws://localhost:8080/ws -h http://localhost:8080 -t 30000
-# Or use defaults (no arguments needed):
+# Use defaults (localhost:8080)
 mcp-rpc-bridge
+
+# Custom port
+mcp-rpc-bridge --rpc-port 9000
+
+# Custom hostname and port
+mcp-rpc-bridge --hostname 192.168.1.100 --rpc-port 9000
+
+# Or with short flags:
+mcp-rpc-bridge -h 192.168.1.100 -p 9000 -t 30000
 ```
 
-**Configuration Function** (`src/config.ts:11-49`):
+**Configuration Function** (`src/config.ts:11-59`):
 
 ```typescript
 export const get_config = (): McpConfig => {
   const args = parseArgs({
     args: process.argv.slice(2),
     options: {
-      "ws-url": { type: "string", short: "w" },
-      "http-url": { type: "string", short: "h" },
+      "rpc-port": { type: "string", short: "p" },
+      "hostname": { type: "string", short: "h" },
       "timeout": { type: "string", short: "t" },
     },
     strict: false,
   });
 
-  const wsUrl = args.values["ws-url"] || "ws://localhost:8080/ws";
-  const httpUrl = args.values["http-url"] || "http://localhost:8080";
+  const hostname = args.values["hostname"] || "localhost";
+  const port = parseInt(args.values["rpc-port"] || "8080", 10);
   const timeout = parseInt(args.values["timeout"] || "30000", 10);
+
+  // Construct URLs from hostname and port
+  const wsUrl = `ws://${hostname}:${port}/ws`;
+  const httpUrl = `http://${hostname}:${port}`;
 
   return { rpcServer: { wsUrl, httpUrl }, defaultTimeout: timeout };
 };
@@ -222,30 +241,26 @@ export const get_config = (): McpConfig => {
 
 ## Usage with Claude Desktop
 
-**MCP Configuration:**
-
-```json
-{
-  "mcpServers": {
-    "rpc-bridge": {
-      "command": "mcp-rpc-bridge",
-      "args": [
-        "--ws-url", "ws://localhost:8080/ws",
-        "--http-url", "http://localhost:8080",
-        "--timeout", "30000"
-      ]
-    }
-  }
-}
-```
-
-**Or use defaults (all arguments are optional):**
+**MCP Configuration (using defaults):**
 
 ```json
 {
   "mcpServers": {
     "rpc-bridge": {
       "command": "mcp-rpc-bridge"
+    }
+  }
+}
+```
+
+**Or with custom port/hostname:**
+
+```json
+{
+  "mcpServers": {
+    "rpc-bridge": {
+      "command": "mcp-rpc-bridge",
+      "args": ["--rpc-port", "9000", "--hostname", "192.168.1.100"]
     }
   }
 }
